@@ -1,4 +1,4 @@
-public class apaxaa {
+public class Apaxaa {
 
 	public static void main(String[] args) {
 		Kattio br = new Kattio(System.in);
