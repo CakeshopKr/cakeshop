@@ -64,7 +64,7 @@ class Kattio extends PrintWriter {
     }
 }
 
-public class Kat2 {
+public class Teque {
     public static void main(String[] args) {
         Kattio br = new Kattio(System.in);
         int bign = br.getInt();
