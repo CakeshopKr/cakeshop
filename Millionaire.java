@@ -1,105 +1,106 @@
 //Liu Tianyi
 //A0199682H
-
-import java.util.StringTokenizer;
-import java.io.BufferedReader;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.OutputStream;
+//6 Apr 20
 
 import java.util.PriorityQueue;
 
-class Kattio extends PrintWriter {
-    public Kattio(InputStream i) {
-        super(new BufferedOutputStream(System.out));
-        r = new BufferedReader(new InputStreamReader(i));
-    }
-    public Kattio(InputStream i, OutputStream o) {
-        super(new BufferedOutputStream(o));
-        r = new BufferedReader(new InputStreamReader(i));
-    }
-
-    public int getInt() {
-        return Integer.parseInt(nextToken());
-    }
-
-    public double getDouble() {
-        return Double.parseDouble(nextToken());
-    }
-
-    public long getLong() {
-        return Long.parseLong(nextToken());
-    }
-
-    public String getWord() {
-        return nextToken();
-    }
-
-    private BufferedReader r;
-    private String line;
-    private StringTokenizer st;
-    private String token;
-
-    private String peekToken() {
-        if (token == null)
-            try {
-                while (st == null || !st.hasMoreTokens()) {
-                    line = r.readLine();
-                    if (line == null) return null;
-                    st = new StringTokenizer(line);
-                }
-                token = st.nextToken();
-            } catch (IOException e) { }
-        return token;
-    }
-
-    private String nextToken() {
-        String ans = peekToken();
-        token = null;
-        return ans;
-    }
-}
-
 class Vertex {
-	int d, value, row, col;
-	Vertex[] neighbours;
+	int value, row, col, best;
+	boolean confirmed;
 	
-	Vertex(int a, int b, int c, int d) {
+	Vertex(int a, int b, int c) {
 		this.value = a;
 		this.row= b;
 		this.col = c;
+		this.confirmed = false;
+		this.best = 1000000001;
+	}
+}
+
+class Pair implements Comparable<Pair> {
+	Vertex v;
+	int d;
+	
+	Pair(Vertex v, int d) {
+		this.v = v;
 		this.d = d;
-		this.neighbours = new Vertex[4];
-		
+	}
+	
+	public int compareTo(Pair other) {
+		return this.d - other.d;
 	}
 }
 
 public class Millionaire {
 	public static final int INF = 1000000001;
-
+	
+	static void relax(Pair curr, Vertex next) {
+		if (next.value - curr.v.value < next.best) next.best = next.value - curr.v.value;
+		if (curr.d > next.best) next.best = curr.d;
+	}
 
 	public static void main(String[] args) {
 		
 		Kattio br = new Kattio(System.in);
 		int row = br.getInt(), col = br.getInt();
 		Vertex[][] map = new Vertex[row][col];
-		boolean[][] visited = new boolean[row][col];
+		PriorityQueue<Pair> q = new PriorityQueue<Pair>();
 		
 		for (int i = 0; i < row; i++) {
 			for (int j = 0; j < col; j++) {
-				map[i][j] = new Vertex(br.getInt(), i, j, INF);
+				map[i][j] = new Vertex(br.getInt(), i, j);
+				q.add(new Pair(map[i][j], INF));
 			}
 		}
-		
-		for (int i = 0; i < row; i++) {
-			for (int j = 0; j < col; j++) {
-				
+		map[0][0].best = 0;
+		q.add(new Pair(map[0][0], 0));
+		while (!q.isEmpty()) {
+			Pair curr = q.remove();
+			if (curr.v.confirmed) continue;
+			curr.v.confirmed = true;
+			if (curr.v == map[row-1][col-1]) {
+				br.print(curr.d);
+				break;
 			}
-		}	
-		
+
+			Vertex next;
+			if (curr.v.row > 0) {
+				next = map[curr.v.row-1][curr.v.col];
+				if (!next.confirmed) {
+					int prev = next.best;
+					relax(curr, next);
+					if (prev != next.best) q.add(new Pair(next, next.best));
+				}
+			}
+			
+			if (curr.v.row < row-1) {
+				next = map[curr.v.row+1][curr.v.col];
+				if (!next.confirmed) {
+					int prev = next.best;
+					relax(curr, next);
+					if (prev != next.best) q.add(new Pair(next, next.best));
+				}
+			}
+			
+			if (curr.v.col > 0) {
+				next = map[curr.v.row][curr.v.col-1];
+				if (!next.confirmed) {
+					int prev = next.best;
+					relax(curr, next);
+					if (prev != next.best) q.add(new Pair(next, next.best));
+				}
+			}
+			
+			if (curr.v.col < col-1) {
+				next = map[curr.v.row][curr.v.col+1];
+				if (!next.confirmed) {
+					int prev = next.best;
+					relax(curr, next);
+					if (prev != next.best) q.add(new Pair(next, next.best));
+				}
+			}
+	
+		}
 		
 		br.close();
 
