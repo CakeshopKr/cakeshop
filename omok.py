@@ -173,9 +173,6 @@ AND WITHIN THESE LINES I SHALL SHOWCASE MY AI PROGRAMMING CHOPS BASICALLY
 SEE YOU IN GOOGLE DEEPMIND IN 4 YEARS' TIME
 '''
 ######################################################################
-                    
-k=makenewboard()
-
 
 def filled(x,y,board):
     return not board[x][y]==0
