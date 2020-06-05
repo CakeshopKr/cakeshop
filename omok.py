@@ -2,11 +2,11 @@ from random import randint
 import copy
 import pygame
 
-win = pygame.display.set_mode((750,750))
+win = pygame.display.set_mode((800,800))
 pygame.display.set_caption("Omok")
 BLACK = (0,0,0)
 WHITE = (255,255,255)
-RAND = 1
+RAND = 10
 PAYOFF1 = [5,40,80,200]
 PAYOFF2 = [5,10,120,200]
 
@@ -104,79 +104,67 @@ def AI(board,n,PAYOFF):
     if n==1:
         m=2
     else: m=1
+    copyboard=copy.deepcopy(board)
     for a in range(15):
         for b in range(15):
-            if not filled(a,b,board):
-                score=evaluation(move(a,b,board,m),m,PAYOFF,a,b)+randint(-RAND,RAND)+evaluation(move(a,b,board,n),n,PAYOFF,a,b)
-                if score>=highest:
+            if not filled(a,b,copyboard):
+                score=evaluation(move(a,b,copyboard,m),m,PAYOFF)+randint(-RAND,RAND)+evaluation(move(a,b,copyboard,n),n,PAYOFF)
+                if score>highest:
                     highest=score
                     movea,moveb=a,b
                     #print("Highest for {} is now at {},{} with score {}.".format(n,a,b,highest))
 
     return move(movea,moveb,board,n)
 
-def evaluation(board,a,PAYOFF,i,j):
+def evaluation(board,a,PAYOFF):
     if a==1:
         b=2
     else: b=1
-    def evahelper(board,n,i,j):
-        savei = i
-        savej = j
+    def evahelper(board,n):
         score=0
-        while j>0 and board[i][j-1]==n:
-            j -= 1
-        if j<=10:
-            if board[i][j]==board[i][j+1] and board[i][j]==n:
-                score+=PAYOFF[0]
-                if board[i][j+2]==n:
-                    score+=PAYOFF[1]
-                    if board[i][j+3]==n:
-                        score+=PAYOFF[2]
-                        if board[i][j+4]==n:
-                            score+=PAYOFF[3]
+        
+        for i in range(15):
+            for j in range(15):
+                if j<=10:
+                    if board[i][j]==board[i][j+1] and board[i][j]==n:
+                        score+=PAYOFF[0]
+                        if board[i][j+2]==n:
+                            score+=PAYOFF[1]
+                            if board[i][j+3]==n:
+                                score+=PAYOFF[2]
+                                if board[i][j+4]==n:
+                                    score+=PAYOFF[3]
+                if i<=10:
+                    if board[i][j]==board[i+1][j] and board[i][j]==n:
+                        score+=PAYOFF[0]
+                        if board[i+2][j]==n:
+                            score+=PAYOFF[1]
+                            if board[i+3][j]==n:
+                                score+=PAYOFF[2]
+                                if board[i+4][j]==n:
+                                    score+=PAYOFF[3]
 
-        i,j = savei,savej
-        while i>0 and board[i-1][j]==n:
-            i -= 1
-        if i<=10:
-            if board[i][j]==board[i+1][j] and board[i][j]==n:
-                score+=PAYOFF[0]
-                if board[i+2][j]==n:
-                    score+=PAYOFF[1]
-                    if board[i+3][j]==n:
-                        score+=PAYOFF[2]
-                        if board[i+4][j]==n:
-                            score+=PAYOFF[3]
+                if i<=10 and j<=10:
+                    if board[i][j]==board[i+1][j+1] and board[i][j]==n:
+                        score+=PAYOFF[0]
+                        if board[i+2][j+2]==n:
+                            score+=PAYOFF[1]
+                            if board[i+3][j+3]==n:
+                                score+=PAYOFF[2]
+                                if board[i+4][j+4]==n:
+                                    score+=PAYOFF[3]
 
-        i,j = savei,savej
-        while i>0 and j>0 and board[i-1][j-1]==n:
-            i -= 1
-            j -= 1
-        if i<=10 and j<=10:
-            if board[i][j]==board[i+1][j+1] and board[i][j]==n:
-                score+=PAYOFF[0]
-                if board[i+2][j+2]==n:
-                    score+=PAYOFF[1]
-                    if board[i+3][j+3]==n:
-                        score+=PAYOFF[2]
-                        if board[i+4][j+4]==n:
-                            score+=PAYOFF[3]
-                            
-        i,j = savei,savej
-        while i>0 and j<14 and board[i-1][j+1]==n:
-            i -= 1
-            j += 1
-        if i<=10 and j>=4:
-            if board[i][j]==board[i+1][j-1] and board[i+1][j-1]==n:
-                score+=PAYOFF[0]
-                if board[i+2][j-2]==n:
-                    score+=PAYOFF[1]
-                    if board[i+3][j-3]==n:
-                        score+=PAYOFF[2]
-                        if board[i+4][j-4]==n:
-                            score+=PAYOFF[3]
+                if i<=10 and j>=4:
+                    if board[i][j]==board[i+1][j-1] and board[i+1][j-1]==n:
+                        score+=PAYOFF[0]
+                        if board[i+2][j-2]==n:
+                            score+=PAYOFF[1]
+                            if board[i+3][j-3]==n:
+                                score+=PAYOFF[2]
+                                if board[i+4][j-4]==n:
+                                    score+=PAYOFF[3]
         return score
-    return 0.5*evahelper(board,a,i,j)-0.5*evahelper(board,b,i,j)
+    return 0.5*evahelper(board,a)-0.5*evahelper(board,b)
 
 
 ######################################################################
@@ -185,9 +173,6 @@ AND WITHIN THESE LINES I SHALL SHOWCASE MY AI PROGRAMMING CHOPS BASICALLY
 SEE YOU IN GOOGLE DEEPMIND IN 4 YEARS' TIME
 '''
 ######################################################################
-                    
-k=makenewboard()
-
 
 def filled(x,y,board):
     return not board[x][y]==0
@@ -203,7 +188,7 @@ def move(x,y,board,n):
         return board
 
 def printboard(board):
-    #pygame.time.delay(1000)
+    #pygame.time.delay(300)
     win.fill((10,70,20))
     for y in range(0,15):
         for x in range(0,15):
@@ -245,21 +230,18 @@ def newgame():
         placed += 1
         state = checkstate(myboard)
         if state != 0:
-            pygame.time.delay(300)
             return state
         if placed == 224:
             print("draw.")
             return 0
 
-        myboard=AI(myboard,2,PAYOFF1)
+        myboard=AI(myboard,2,PAYOFF2)
         placed += 1
         printboard(myboard)
         if state != 0:
-            pygame.time.delay(300)
             return state
         if placed == 224:
             print("draw.")
-
             return 0
 
 ### Change to true if you want to play as 1 ###
