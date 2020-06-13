@@ -19,7 +19,6 @@ for row in range(222750):
         currshopend = row
         currd = {orders.iloc[row,1] : 1}
         shops[orders.iloc[row,0]] = 0
-
         continue
         
     currshopend += 1
@@ -33,10 +32,8 @@ for row in range(222750):
         currshopstart += 1
         if currshopstart == currshopend:
             currd = {orders.iloc[currshopstart,1] : 1}
-            cont = True
             break
     
-    if cont: continue
     if orders.iloc[row,1] not in currd:
         currd[orders.iloc[row,1]] = 1
     else:
@@ -47,12 +44,7 @@ for row in range(222750):
         #print(orders.iloc[row,0])
         #print(currd)
         shops[orders.iloc[row,0]] = max(currd, key = currd.get)
-    else:
-        shops[orders.iloc[row,0]] = 0
-        
-for i in shops.items():
-    print(i[0], i[1])
-#print(shops)
+
 result = [[k, v] for k,v in shops.items()]
 answer = pd.DataFrame(result, columns =['shopid', 'userid']) 
 #answer.to_csv('RetailRow.csv')
