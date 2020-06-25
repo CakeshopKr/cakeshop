@@ -1,0 +1,8 @@
+root = "D:/shopee-product-detection-dataset-002/test/"
+master_data = datasets.ImageFolder(root, transform=train_transform)
+n = len(master_data)
+print(n)
+
+final_loader = DataLoader(master_data, batch_size=n, shuffle=True, pin_memory=False, num_workers=4)
+for x,y in final_loader:
+    print(model(x.cuda()).shape)
