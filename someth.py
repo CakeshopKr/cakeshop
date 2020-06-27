@@ -19,17 +19,27 @@ class Wordlist(object):
 
 wordlist_dict = {}
 
+
 testcases = int(input())
-for i in range(testcases):
+for _ in range(testcases):
     [n_input, n_test] = input().split()
-    for i in range(int(n_input)):
+    for _ in range(int(n_input)):
         string_in = input().split()
-        
-        for i in range len(string_in):
+        i = len(string_in)-1
+        while i >= 0:
             if string_in[i] not in wordlist_dict:
                 wordlist_dict[string_in[i]] = Wordlist(string_in[i])
             currword = Word(string_in[i])
-            wordlist_dict[string_in[0]].addword(Word(None))
-            if i < len(string_in-1):
-                currword.setnext()
+            wordlist_dict[string_in[i]].addword(currword)
+            if i != len(string_in)-1:
+                currword.setnext(saveword)
+            saveword = currword
+
+            i -= 1
+    for _ in range(int(n_test)):
+        string_in = input().split()
+        try: temp = wordlist_dict.get(string_in[0])
+        
+        for testword in string_in:
+            
                 
